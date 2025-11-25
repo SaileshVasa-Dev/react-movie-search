@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useRef, useMemo } from "react";
 import axios from "axios";
 
-const API_KEY =
-  import.meta.env.VITE_TMDB_API_KEY || "7163db8b7c5abfc54583ec3896958457";
+const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
 function Banner() {
   const [movies, setMovies] = useState([]);
@@ -69,6 +68,23 @@ function Banner() {
   }, [slideIndex, totalReal]);
 
   const activeMovie = movies[activeIndex];
+
+  useEffect(() => {
+    if (!activeMovie) return;
+
+    const url = `https://image.tmdb.org/t/p/original${
+      activeMovie.backdrop_path || activeMovie.poster_path
+    }`;
+
+    // Remove body background so blur layer is visible
+    document.body.style.backgroundImage = "none";
+
+    // Update global blurred background layer
+    const bg = document.getElementById("page-blur-bg");
+    if (bg) {
+      bg.style.backgroundImage = `url(${url})`;
+    }
+  }, [activeMovie]);
 
   const getImage = (m) => {
     if (!m) return "";

@@ -298,6 +298,24 @@ function Movies() {
     return processedMovies.slice(start, start + PAGE_SIZE);
   }, [processedMovies, pageNo]);
 
+  //Background movie for blur effect
+  const backgroundMovie =
+    paginatedMovies.length > 0 ? paginatedMovies[0] : null;
+
+  useEffect(() => {
+    const bg = document.getElementById("page-blur-bg");
+
+    if (!bg) return;
+
+    if (backgroundMovie?.backdrop_path || backgroundMovie?.poster_path) {
+      bg.style.backgroundImage = `url(https://image.tmdb.org/t/p/original${
+        backgroundMovie.backdrop_path || backgroundMovie.poster_path
+      })`;
+    } else {
+      bg.style.backgroundImage = "none";
+    }
+  }, [backgroundMovie]);
+
   const handleNext = () =>
     setPageNo((prev) => (prev >= totalPages ? prev : prev + 1));
 

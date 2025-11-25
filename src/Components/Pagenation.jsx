@@ -2,7 +2,11 @@ import React from "react";
 
 function Pagenation({ handlePrev, handleNext, pageNo }) {
   return (
-    <div className="bg-gray-400 p-4 mt-8 flex justify-center rounded-lg">
+    <div
+      className="h-12 backdrop-blur-xl bg-white/10 border border-white/10 
+                rounded-xl mx-4 md:mx-32 mt-6 flex justify-center 
+                items-center gap-6 shadow-xl"
+    >
       <button onClick={handlePrev} className="px-8 hover:cursor-pointer">
         <i className="fa-regular fa-circle-left"></i>
       </button>

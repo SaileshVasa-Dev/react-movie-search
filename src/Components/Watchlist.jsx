@@ -140,6 +140,9 @@ function Watchlist() {
     return data.filter((movie) => movie.title.toLowerCase().includes(s));
   }, [watchList, currGenre, languageFilter, search, sortField, sortOrder]);
 
+  // Banner should control the global background
+  useEffect(() => {}, []);
+
   return (
     <>
       {/* ---------------- GENRE BUTTONS ---------------- */}
@@ -166,7 +169,9 @@ function Watchlist() {
           ref={searchInputRef}
           onChange={handleSearch}
           value={search}
-          className="bg-gray-200 p-3 h-10 w-full md:w-96 outline-none rounded shadow-sm"
+          className="bg-white/10 text-gray-200 placeholder-gray-400 
+             p-3 h-10 w-full md:w-96 outline-none rounded-lg 
+             border border-white/10 backdrop-blur-md"
           type="text"
           placeholder="Search Movies"
         />
@@ -175,7 +180,9 @@ function Watchlist() {
         <div className="relative" ref={langBoxRef}>
           <div
             onClick={() => setShowLangDropdown(!showLangDropdown)}
-            className="bg-white p-2 h-10 w-full md:w-44 border rounded cursor-pointer flex items-center justify-between shadow-sm"
+            className="bg-white/10 text-gray-200 h-10 w-full md:w-44 
+           p-2 rounded-lg border border-white/10 backdrop-blur-md 
+           cursor-pointer flex items-center justify-between"
           >
             <span
               className={`text-sm truncate ${
@@ -249,9 +256,12 @@ function Watchlist() {
       </div>
 
       {/* ---------------- MOVIE TABLE (Scrollable on mobile) ---------------- */}
-      <div className="m-4 md:m-8 overflow-x-auto rounded-lg border border-gray-400">
-        <table className="min-w-[700px] w-full text-gray-500 text-center">
-          <thead className="border-b-2">
+      <div
+        className="m-4 md:m-8 overflow-x-auto rounded-lg 
+                backdrop-blur-xl bg-white/5 border border-white/10 shadow-xl"
+      >
+        <table className="min-w-[700px] w-full text-gray-200 text-center">
+          <thead className="border-b-2 bg-white/5 text-gray-100">
             <tr>
               <th className="p-3">Name</th>
 
@@ -297,7 +307,10 @@ function Watchlist() {
 
           <tbody>
             {processedMovies.map((movie) => (
-              <tr key={movie.id} className="border-b-2">
+              <tr
+                key={movie.id}
+                className="border-b border-gray-700 hover:bg-white/5"
+              >
                 <td className="flex items-center px-4 py-6">
                   <img
                     className="h-24 w-40 object-cover rounded"

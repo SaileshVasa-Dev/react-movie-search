@@ -61,6 +61,19 @@ function Movies() {
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const [langSearchInput, setLangSearchInput] = useState("");
 
+  /* ------------ Language Filter Helpers ------------ */
+  // Filter dropdown languages based on search
+  const filteredLanguages = useMemo(() => {
+    const s = langSearchInput.toLowerCase();
+    return languages.filter((l) => l.english_name.toLowerCase().includes(s));
+  }, [langSearchInput]);
+
+  // Convert language code → readable English name
+  const getLanguageName = useCallback((code) => {
+    const lang = languages.find((l) => l.iso_639_1 === code);
+    return lang ? lang.english_name : code.toUpperCase();
+  }, []);
+
   const [showCalendar, setShowCalendar] = useState(false);
   const [showYearList, setShowYearList] = useState(false);
   const [calendarYear, setCalendarYear] = useState(currentYear);

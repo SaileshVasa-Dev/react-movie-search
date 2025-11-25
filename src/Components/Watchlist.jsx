@@ -169,7 +169,7 @@ function Watchlist() {
           ref={searchInputRef}
           onChange={handleSearch}
           value={search}
-          className="bg-white/10 text-gray-200 placeholder-gray-400 
+          className="bg-white/10 text-gray-200 placeholder-gray-200 
              p-3 h-10 w-full md:w-96 outline-none rounded-lg 
              border border-white/10 backdrop-blur-md"
           type="text"
@@ -188,7 +188,7 @@ function Watchlist() {
               className={`text-sm truncate ${
                 languageFilter === "All Languages"
                   ? "text-gray-400"
-                  : "text-gray-700"
+                  : "text-gray-200"
               }`}
             >
               {languageFilter === "All Languages"

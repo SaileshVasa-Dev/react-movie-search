@@ -547,7 +547,9 @@ function Movies() {
       </div>
 
       {/* Title */}
-      <h2 className="text-2xl font-bold text-center my-5">Trending Movies</h2>
+      <h2 className="text-2xl font-bold text-center text-gray-200 my-5">
+        Trending Movies
+      </h2>
 
       {/* Movies Grid */}
       <div className="flex flex-row flex-wrap justify-around gap-8">

@@ -27,12 +27,12 @@ function Watchlist() {
   const searchInputRef = useRef(null);
   const langBoxRef = useRef(null);
 
-  // Autofocus search input
+  /* ---------------- Autofocus ---------------- */
   useEffect(() => {
     if (searchInputRef.current) searchInputRef.current.focus();
   }, []);
 
-  // Clicking outside closes dropdown
+  /* ---------------- Close dropdown on outside click ---------------- */
   useEffect(() => {
     function handleClickOutside(e) {
       if (langBoxRef.current && !langBoxRef.current.contains(e.target)) {
@@ -43,32 +43,29 @@ function Watchlist() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Search input handler
+  /* ---------------- Handlers ---------------- */
   const handleSearch = useCallback((e) => setSearch(e.target.value), []);
 
   // Genre filter handler
   const handleFilter = useCallback((g) => setCurrGenre(g), []);
 
   // Sorting Handlers
-  const sortRatingAsc = useCallback(() => {
+  const sortRatingAsc = () => {
     setSortField("rating");
     setSortOrder("asc");
-  }, []);
-
-  const sortRatingDesc = useCallback(() => {
+  };
+  const sortRatingDesc = () => {
     setSortField("rating");
     setSortOrder("desc");
-  }, []);
-
-  const sortPopAsc = useCallback(() => {
+  };
+  const sortPopAsc = () => {
     setSortField("popularity");
     setSortOrder("asc");
-  }, []);
-
-  const sortPopDesc = useCallback(() => {
+  };
+  const sortPopDesc = () => {
     setSortField("popularity");
     setSortOrder("desc");
-  }, []);
+  };
 
   // Genre list computed from watchList
   const genreList = useMemo(() => {
@@ -86,14 +83,14 @@ function Watchlist() {
   useEffect(() => {
     if (currGenre === "All Genres") return;
 
-    const hasMovies = watchList.some((movie) =>
+    const valid = watchList.some((movie) =>
       movie.genre_ids?.some((id) => {
         const name = genreIds.find((g) => g.id === id)?.name;
         return name === currGenre;
       })
     );
 
-    if (!hasMovies) setCurrGenre("All Genres");
+    if (!valid) setCurrGenre("All Genres");
   }, [watchList, currGenre]);
 
   // Filter language list
@@ -119,7 +116,6 @@ function Watchlist() {
           sortField === "rating" ? a.vote_average ?? 0 : a.popularity ?? 0;
         const bVal =
           sortField === "rating" ? b.vote_average ?? 0 : b.popularity ?? 0;
-
         return sortOrder === "asc" ? aVal - bVal : bVal - aVal;
       });
     }
@@ -141,9 +137,7 @@ function Watchlist() {
 
     // Search filter
     const s = search.toLowerCase();
-    data = data.filter((movie) => movie.title.toLowerCase().includes(s));
-
-    return data;
+    return data.filter((movie) => movie.title.toLowerCase().includes(s));
   }, [watchList, currGenre, languageFilter, search, sortField, sortOrder]);
 
   return (
@@ -156,8 +150,8 @@ function Watchlist() {
             onClick={() => handleFilter(genre)}
             className={
               currGenre === genre
-                ? "flex justify-center items-center h-12 w-36 bg-blue-400 rounded-xl font-bold text-white mx-4 my-2 cursor-pointer"
-                : "flex justify-center items-center h-12 w-36 bg-gray-400/50 rounded-xl font-bold text-white mx-4 my-2 cursor-pointer"
+                ? "flex justify-center items-center h-12 px-6 md:px-12 bg-blue-400 rounded-xl font-bold text-white mx-2 my-2 cursor-pointer"
+                : "flex justify-center items-center h-12 px-6 md:px-12 bg-gray-400/50 rounded-xl font-bold text-white mx-2 my-2 cursor-pointer"
             }
           >
             {genre}
@@ -165,23 +159,23 @@ function Watchlist() {
         ))}
       </div>
 
-      {/* ---------------- SEARCH (CENTER) + LANGUAGE FILTER (TOP RIGHT) ---------------- */}
-      <div className="flex justify-center my-4 w-full relative">
-        {/* Search Bar centered */}
+      {/* ---------------- Search + Language (Responsive) ---------------- */}
+      <div className="w-full px-4 my-4 flex flex-col md:flex-row md:justify-center md:items-center gap-3 relative">
+        {/* Search Input */}
         <input
           ref={searchInputRef}
           onChange={handleSearch}
           value={search}
-          className="bg-gray-200 p-3 h-10 w-[22rem] outline-none rounded shadow-sm"
+          className="bg-gray-200 p-3 h-10 w-full md:w-96 outline-none rounded shadow-sm"
           type="text"
           placeholder="Search Movies"
         />
 
-        {/* Language Filter - top right aligned */}
-        <div className="absolute right-[10%] top-0" ref={langBoxRef}>
+        {/* Language Filter */}
+        <div className="relative" ref={langBoxRef}>
           <div
             onClick={() => setShowLangDropdown(!showLangDropdown)}
-            className="bg-white p-2 h-10 w-44 border rounded cursor-pointer flex items-center justify-between shadow-sm"
+            className="bg-white p-2 h-10 w-full md:w-44 border rounded cursor-pointer flex items-center justify-between shadow-sm"
           >
             <span
               className={`text-sm truncate ${
@@ -197,7 +191,7 @@ function Watchlist() {
 
             {/* Search ↔ Cross icon */}
             {languageFilter === "All Languages" ? (
-              <i className="fa-solid fa-magnifying-glass text-sm text-gray-600"></i>
+              <i className="fa-solid fa-magnifying-glass text-sm text-gray-600" />
             ) : (
               <i
                 className="fa-solid fa-xmark text-sm text-gray-600"
@@ -206,13 +200,13 @@ function Watchlist() {
                   setLanguageFilter("All Languages");
                   setLanguageSearchInput("");
                 }}
-              ></i>
+              />
             )}
           </div>
 
           {/* Dropdown */}
           {showLangDropdown && (
-            <div className="absolute mt-1 w-48 bg-white border rounded shadow-xl max-h-64 overflow-auto z-50">
+            <div className="absolute mt-1 w-full md:w-48 bg-white border rounded shadow-xl max-h-64 overflow-auto z-50">
               {/* Search inside dropdown */}
               <div className="p-2 border-b bg-gray-50">
                 <input
@@ -254,15 +248,15 @@ function Watchlist() {
         </div>
       </div>
 
-      {/* ---------------- MOVIE TABLE ---------------- */}
-      <div className="m-8 overflow-hidden rounded-lg border border-gray-400">
-        <table className="w-full text-gray-500 text-center">
+      {/* ---------------- MOVIE TABLE (Scrollable on mobile) ---------------- */}
+      <div className="m-4 md:m-8 overflow-x-auto rounded-lg border border-gray-400">
+        <table className="min-w-[700px] w-full text-gray-500 text-center">
           <thead className="border-b-2">
             <tr>
-              <th>Name</th>
+              <th className="p-3">Name</th>
 
               {/* Ratings */}
-              <th>
+              <th className="p-3">
                 <div className="flex justify-center items-center gap-2">
                   <i
                     onClick={sortRatingAsc}
@@ -279,7 +273,7 @@ function Watchlist() {
               </th>
 
               {/* Popularity */}
-              <th>
+              <th className="p-3">
                 <div className="flex justify-center items-center gap-2">
                   <i
                     onClick={sortPopAsc}
@@ -295,9 +289,9 @@ function Watchlist() {
                 </div>
               </th>
 
-              <th>Genre</th>
-              <th>Language</th>
-              <th>Actions</th>
+              <th className="p-3">Genre</th>
+              <th className="p-3">Language</th>
+              <th className="p-3">Actions</th>
             </tr>
           </thead>
 
@@ -306,11 +300,11 @@ function Watchlist() {
               <tr key={movie.id} className="border-b-2">
                 <td className="flex items-center px-4 py-6">
                   <img
-                    className="h-24 w-40"
+                    className="h-24 w-40 object-cover rounded"
                     src={`https://image.tmdb.org/t/p/original${movie.poster_path}`}
                     alt={movie.title}
                   />
-                  <div className="mx-10">{movie.title}</div>
+                  <div className="mx-4">{movie.title}</div>
                 </td>
 
                 <td>{movie.vote_average}</td>

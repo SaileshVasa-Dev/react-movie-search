@@ -330,20 +330,22 @@ function Movies() {
 
   return (
     <div className="p-5">
-      {/* Search + Filters */}
-      <div className="flex justify-center my-4 w-full relative">
+      {/* SEARCH + FILTER ROW */}
+      <div className="w-full flex flex-col md:flex-row md:items-center md:justify-center gap-3 my-4 px-3">
+        {/* SEARCH */}
         <input
           onChange={(e) => setSearch(e.target.value)}
           value={search}
-          className="bg-gray-200 p-3 h-10 w-88 outline-none rounded shadow-sm"
+          className="bg-gray-200 p-3 h-10 w-full md:w-88 outline-none rounded shadow-sm"
+          type="text"
           placeholder="Search Movies"
         />
 
         {/* LANGUAGE FILTER */}
-        <div className="absolute right-[18%] top-0" ref={langRef}>
+        <div className="relative w-full md:w-44" ref={langRef}>
           <div
             onClick={() => setShowLangDropdown((prev) => !prev)}
-            className="bg-white p-2 h-10 w-44 border rounded cursor-pointer flex items-center justify-between shadow-sm"
+            className="bg-white p-2 h-10 w-full border rounded cursor-pointer flex items-center justify-between shadow-sm"
           >
             <span
               className={`text-sm truncate ${
@@ -354,69 +356,79 @@ function Movies() {
             >
               {languageFilter === "All Languages"
                 ? "Language filter"
-                : languages.find((l) => l.iso_639_1 === languageFilter)
-                    ?.english_name}
+                : getLanguageName(languageFilter)}
             </span>
 
-            {languageFilter !== "All Languages" ? (
+            {languageFilter === "All Languages" ? (
+              <i className="fa-solid fa-magnifying-glass text-sm text-gray-600" />
+            ) : (
               <i
                 className="fa-solid fa-xmark text-sm text-gray-600"
                 onClick={(e) => {
                   e.stopPropagation();
                   setLanguageFilter("All Languages");
+                  setLangSearchInput("");
+                  setPageNo(1);
                 }}
               />
-            ) : (
-              <i className="fa-solid fa-magnifying-glass text-sm text-gray-600" />
             )}
           </div>
 
           {showLangDropdown && (
-            <div className="absolute mt-1 w-48 bg-white border rounded shadow-xl max-h-64 overflow-auto z-50">
+            <div className="absolute left-0 mt-1 w-full bg-white border rounded shadow-xl max-h-64 overflow-auto z-50">
               <div className="p-2 border-b bg-gray-50">
                 <input
+                  className="p-2 w-full outline-none bg-white text-sm border shadow-inner rounded"
+                  placeholder="Search language..."
                   value={langSearchInput}
                   onChange={(e) => setLangSearchInput(e.target.value)}
-                  className="p-2 w-full outline-none border rounded text-sm"
-                  placeholder="Search language..."
                 />
               </div>
 
-              {languages
-                .filter((l) =>
-                  l.english_name
-                    .toLowerCase()
-                    .includes(langSearchInput.toLowerCase())
-                )
-                .map((lang) => (
-                  <div
-                    key={lang.iso_639_1}
-                    className="p-2 hover:bg-gray-100 cursor-pointer text-sm"
-                    onClick={() => {
-                      setLanguageFilter(lang.iso_639_1);
-                      setShowLangDropdown(false);
-                    }}
-                  >
-                    {lang.english_name}
-                  </div>
-                ))}
+              <div
+                className="p-2 hover:bg-gray-100 cursor-pointer text-sm"
+                onClick={() => {
+                  setLanguageFilter("All Languages");
+                  setLangSearchInput("");
+                  setShowLangDropdown(false);
+                  setPageNo(1);
+                }}
+              >
+                All Languages
+              </div>
+
+              {filteredLanguages.map((lang) => (
+                <div
+                  key={lang.iso_639_1}
+                  className="p-2 hover:bg-gray-100 cursor-pointer text-sm"
+                  onClick={() => {
+                    setLanguageFilter(lang.iso_639_1);
+                    setLangSearchInput("");
+                    setShowLangDropdown(false);
+                    setPageNo(1);
+                  }}
+                >
+                  {lang.english_name}
+                </div>
+              ))}
             </div>
           )}
         </div>
 
         {/* CALENDAR FILTER */}
-        <div className="absolute right-[2%] top-0" ref={calendarRef}>
+        <div className="relative w-full md:w-44" ref={calendarRef}>
           <div
             onClick={() =>
-              setShowCalendar((p) => {
-                if (!p) {
+              setShowCalendar((prev) => {
+                const next = !prev;
+                if (next) {
                   setShowYearList(false);
                   setCalendarYear(selectedYear || currentYear);
                 }
-                return !p;
+                return next;
               })
             }
-            className="bg-white p-2 h-10 w-44 border rounded cursor-pointer flex items-center justify-between shadow-sm"
+            className="bg-white p-2 h-10 w-full border rounded cursor-pointer flex items-center justify-between shadow-sm"
           >
             <span
               className={`text-sm truncate ${
@@ -440,30 +452,31 @@ function Movies() {
           </div>
 
           {showCalendar && (
-            <div className="absolute right-0 mt-1 w-64 bg-white border rounded shadow-xl p-3 z-50">
-              {/* Year selector */}
-              <div className="flex justify-between mb-2">
+            <div className="absolute left-0 mt-1 w-full bg-white border rounded shadow-xl z-50 p-3">
+              {/* YEAR HEADER */}
+              <div className="flex items-center justify-between mb-2">
                 <span
-                  className="font-semibold cursor-pointer"
-                  onClick={() => setShowYearList((p) => !p)}
+                  className="font-semibold text-base cursor-pointer"
+                  onClick={() => setShowYearList((prev) => !prev)}
                 >
                   {calendarYear}
                 </span>
               </div>
 
+              {/* YEAR DROPDOWN */}
               {showYearList && (
-                <div className="grid grid-cols-3 gap-2 max-h-40 overflow-auto mb-3">
+                <div className="grid grid-cols-3 gap-2 mb-3 max-h-40 overflow-auto">
                   {years.map((yr) => (
                     <div
                       key={yr}
                       onClick={() => {
+                        setCalendarYear(yr);
                         setSelectedYear(yr);
                         setSelectedMonth(null);
-                        setCalendarYear(yr);
                         setShowYearList(false);
                         setPageNo(1);
                       }}
-                      className={`p-2 text-center text-sm rounded cursor-pointer ${
+                      className={`p-2 text-center rounded cursor-pointer text-sm ${
                         selectedYear === yr
                           ? "bg-blue-500 text-white"
                           : "bg-gray-100 hover:bg-gray-200"
@@ -475,27 +488,32 @@ function Movies() {
                 </div>
               )}
 
-              {/* Month selector */}
+              {/* MONTH GRID */}
               <div className="grid grid-cols-3 gap-2 max-h-40 overflow-auto">
                 {months.map((m) => {
-                  const active =
+                  const isActive =
                     selectedYear === calendarYear && selectedMonth === m.num;
 
                   return (
                     <div
                       key={m.num}
                       onClick={() => {
-                        if (active) {
+                        if (isActive) {
                           setSelectedMonth(null);
                           setShowCalendar(false);
+                          setShowYearList(false);
+                          setPageNo(1);
                           return;
                         }
+
                         setSelectedYear(calendarYear);
                         setSelectedMonth(m.num);
                         setShowCalendar(false);
+                        setShowYearList(false);
+                        setPageNo(1);
                       }}
-                      className={`p-2 text-center rounded text-sm cursor-pointer ${
-                        active
+                      className={`p-2 text-center rounded cursor-pointer text-sm ${
+                        isActive
                           ? "bg-blue-500 text-white"
                           : "bg-gray-100 hover:bg-gray-200"
                       }`}

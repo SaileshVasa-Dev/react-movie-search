@@ -17,7 +17,7 @@ function Navbar() {
       {/* Clickable Logo → Go to Movies */}
       <Link to="/" className="cursor-pointer">
         <img
-          className="h-10 w-10 hover:opacity-80 transition"
+          className="h-14 w-24 hover:opacity-80 transition"
           src={Logo}
           alt="Movies Logo"
         />
